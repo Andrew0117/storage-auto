@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Car Inventory</title>
+
+    <script type="text/javascript" th:src="@{/js/jquery-3.7.1.js}"></script>
+    <script type="text/javascript" th:src="@{/js/ajax-methods.js}"></script>
+    <script type="text/javascript" th:src="@{/js/storage-auto.js}"></script>
+
+    <link rel="stylesheet" type="text/css" th:href="@{/css/storage-auto.css}"/>
+</head>
+<body>
+<div id="language-selector">
+    <span>Select Language:</span>
+    <a href="?lang=ru">Русский</a>
+    <a href="?lang=ua">Українська</a>
+    <a href="?lang=en">English</a>
+</div>
+
+<div class="container">
+    <h2 th:text="#{label.car}">Car Inventory</h2>
+
+    <form th:action="@{/storage-auto}" method="post" th:object="${auto}">
+        <div class="top-bar">
+            <button type="button" onclick="openAddModal()">Add</button>
+            <input type="text" id="searchBrand" th:field="*{brand}" th:placeholder="#{label.search.brand}">
+            <input type="text" id="searchModel" th:field="*{model}" th:placeholder="#{label.search.model}">
+            <button type="submit">Search</button><!--onclick="searchTable()"-->
+            <button type="button" onclick="openCommentModal()">Add Comment</button>
+        </div>
+    </form>
+
+    <table id="carTable">
+        <thead>
+        <tr>
+            <th th:text="#{label.brand}">Brand</th>
+            <th th:text="#{label.model}">Model</th>
+            <th th:text="#{label.comment}">Comment</th>
+            <th th:text="#{label.color}">Color</th>
+            <th th:text="#{label.price}">Price</th>
+            <th></th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:id="${storage.idBrand} + ', ' + ${storage.idModel}" th:each="storage : ${storages}">
+            <td th:text="${storage.brand}">Toyota</td>
+            <td th:text="${storage.model}">Corolla</td>
+            <td th:text="${storage.comment}">Reliable</td>
+            <td ><span class="color-circle" th:style="'background-color:' + ${storage.color} + ';'"></span><span th:text="${storage.color}">John Doe</span></td>
+            <td th:text="'$' + ${storage.price}">$20,000</td>
+            <td class="actions">
+                <button class="btn-delete" onclick="deleteRow(this)">Delete</button>
+            </td>
+            <td class="actions">
+                <button class="btn-change" onclick="openChangeModal(this)">Change</button>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<!-- Add Modal -->
+<div id="addModal" class="modal">
+    <div class="modal-content">
+        <h3 th:text="#{label.add.new.car}">Add New Car</h3>
+        <input id="addBrand" th:placeholder="#{label.brand}">
+        <input id="addModel" th:placeholder="#{label.model}">
+        <textarea id="addComment" th:placeholder="#{label.comment}"></textarea>
+        <label th:text="#{label.color}">Color</label>
+        <input id="addColor" type="color" value="#000000">
+        <input id="addPrice" th:placeholder="#{label.price}" type="number" step="0.01" pattern="^\d+(?:\.\d{1,2})?$">
+        <div class="modal-footer">
+            <button class="btn-secondary" onclick="closeAddModal()">Close</button>
+            <button class="btn-primary" onclick="saveNewCar()">Save</button>
+        </div>
+    </div>
+</div>
+
+<!-- Comment Modal -->
+<div id="commentModal" class="modal">
+    <div class="modal-content">
+        <h3 th:text="#{label.add.comment}">Add Comment</h3>
+        <label th:text="#{label.brand}">Brand</label>
+        <select id="commentBrand">
+
+        </select>
+        <label th:text="#{label.model}">Model</label>
+        <select id="commentModel">
+
+        </select>
+        <textarea id="commentText" th:placeholder="#{label.comment}"></textarea>
+        <div class="modal-footer">
+            <button class="btn-secondary" onclick="closeCommentModal()">Close</button>
+            <button class="btn-primary" onclick="saveComment()">Save</button>
+        </div>
+    </div>
+</div>
+
+<!-- Change Modal -->
+<div id="changeModal" class="modal">
+    <div class="modal-content">
+        <h3 th:text="#{label.edit.color.and.price}">Edit Color and Price</h3>
+        <label>Color</label>
+        <input id="editColor" type="color">
+        <input id="editPrice" type="number" step="0.01" pattern="^\d+(?:\.\d{1,2})?$" th:placeholder="#{label.price}">
+        <div class="modal-footer">
+            <button class="btn-secondary" onclick="closeChangeModal()">Close</button>
+            <button class="btn-primary" onclick="saveChange()">Save</button>
+        </div>
+    </div>
+</div>
+</body>
+</html>
